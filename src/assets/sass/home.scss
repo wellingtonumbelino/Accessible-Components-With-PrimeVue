@@ -1,0 +1,15 @@
+.home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .multiselect-accessible {
+    .multiselect-button {
+      .multiselect-label {
+        .p-chip {
+          margin-right: 3px;
+        }
+      }
+    }
+  }
+}

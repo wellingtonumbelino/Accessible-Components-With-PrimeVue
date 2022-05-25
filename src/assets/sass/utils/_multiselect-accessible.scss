@@ -1,0 +1,212 @@
+.multiselect-accessible {
+  display: inline-block;
+  cursor: pointer;
+  position: relative;
+
+  .multiselect-button {
+    display: flex;
+    background: white;
+    color: #767676;
+    border: 1px solid #CCCCCC;
+    border-radius: 3px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.375rem 0.5rem;
+    width: 250px;
+    height: 37px;
+    cursor: pointer;
+    font-size: 14px;
+
+    &:focus-visible {
+      outline: 2px solid #F2AF00;
+    }
+
+    .multiselect-label {
+      max-width: 89.5%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      .p-chip {
+        .p-chip-remove-icon {
+          &:focus {
+            box-shadow: none;
+            outline: 2px solid #F2AF00;
+            border-radius: 50%;
+          }
+        }
+      }
+    }
+
+    .pi {
+      &.pi-chevron-up {
+        color: #444444;
+      }
+
+      &.pi-chevron-down {
+        color: #444444;
+      }
+    }
+  }
+
+  .multiselect-panel {
+    position: absolute;
+    z-index: 1;
+    background: white;
+    color: #444444;
+    box-shadow: 0 2px 4px -1px #00000033, 0 4px 5px 0 #00000024, 0 1px 10px 0 #0000001F;
+    border-radius: 3px;
+    min-width: 250px;
+    max-height: 250px;
+
+    .multiselect-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #F8F9FA;
+      border-bottom: 1px solid #DEE2E6;
+      padding: 0.7rem;
+      cursor: default;
+
+      .checkbox {
+        .p-checkbox {
+          position: relative;
+          margin-right: auto;
+          z-index: 2;
+
+          &:not(.p-checkbox-disable) {
+            .p-checkbox-box {
+              &.p-focus {
+                box-shadow: none;
+              }
+
+              &:hover {
+                border-color: #CCCCCC;
+              }
+            }
+          }
+        }
+
+        &:focus-visible {
+          .p-checkbox {
+            &:not(.p-checkbox-disable) {
+              .p-checkbox-box {
+                outline: 2px solid #F2AF00;
+              }
+            }
+          }
+        }
+      }
+
+      .p-input-icon-right {
+        position: relative;
+        flex: 1 1 auto;
+
+        .p-inputtext {
+          width: 90%;
+
+          &:enabled {
+            &:focus {
+              box-shadow: none;
+            }
+
+            &:hover {
+              border-color: #CCCCCC;
+            }
+          }
+
+          &:focus-visible {
+            outline: 2px solid #F2AF00;
+          }
+        }
+
+        i {
+          position: absolute;
+          margin-right: 0.5rem;
+        }
+      }
+
+      button {
+        display: flex;
+        position: relative;
+        color: #444444;
+        border: none;
+        background: transparent;
+        width: 27px;
+        height: 27px;
+        cursor: pointer;
+        justify-content: center;
+        align-items: center;
+        margin-left: auto;
+
+        &:hover {
+          background-color: #E9ECEF;
+          border-radius: 50%;
+        }
+
+        &:focus-visible {
+          outline: 2px solid #F2AF00;
+          border-radius: 50%;
+        }
+      }
+    }
+
+    .multiselect-panel-items {
+      overflow-y: auto;
+      overflow-x: hidden;
+      width: 100%;
+      max-height: 180px;
+      padding: 2px;
+      margin-top: 0;
+      margin-bottom: 0;
+
+      .multiselect-panel-item {
+        display: flex;
+        align-items: center;
+        padding: 0.7rem 0.7rem;
+        position: relative;
+        width: 100%;
+        margin: 0;
+
+        .p-checkbox {
+          margin-right: 0.5rem;
+
+          &:not(.p-checkbox-disable) {
+            .p-checkbox-box {
+              &.p-focus {
+                box-shadow: none;
+                outline: 2px solid #F2AF00;
+              }
+            }
+          }
+        }
+
+        &:hover {
+          background-color: #E9ECEF;
+        }
+
+        &:focus-visible {
+          outline: 2px solid #F2AF00;
+          z-index: 2;
+        }
+      }
+
+      .empty-message {
+        display: flex;
+        padding: 0.7rem 1rem;
+        color: #444444;
+        cursor: auto;
+
+        &:focus-visible {
+          outline: 2px solid #F2AF00;
+        }
+      }
+
+      .item-checked {
+        background-color: #EFF6FF;
+        color: #1D4ED8;
+        padding: -2px
+      }
+    }
+  }
+}
