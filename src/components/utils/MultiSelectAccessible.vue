@@ -2,7 +2,7 @@
   <div class="multiselect-accessible">
     <button
       class="multiselect-button"
-      :aria-label="`${ariaLabel} ${status ? 'Open' : 'Closed'}`"
+      :aria-label="ariaLabel + formatMultiSelectStatus()"
       :id="'multiselect-button' + panelId"
       @click.stop.prevent="showHideMultiSelectPanel"
     >
@@ -40,26 +40,18 @@
       @keyup.esc="closeMultiSelectPanel"
     >
       <div class="multiselect-panel-header">
-        <div
-          class="checkbox"
-          tabindex="0"
+        <Checkbox
+          v-model="checkedAllOptions"
+          :aria-label="`Checkbox. Select All Options ${formatCheckboxStatus()}`"
+          :binary="true"
+          @click.stop.prevent="selectAllOptions"
           @keyup.enter.stop.prevent="selectAllOptions"
-        >
-          <span style="color: transparent; font-size: 0">
-            Checkbox. Select All Options
-            {{ formatCheckboxStatus() }}
-          </span>
-          <Checkbox
-            v-model="checkedAllOptions"
-            tabindex="-1"
-            :binary="true"
-            @click.stop.prevent="selectAllOptions"
-          />
-        </div>
+        />
         <div v-show="filter" class="multiselect-panel-filter">
           <span class="p-input-icon-right">
             <InputText
               aria-label="MultiSelect Filter"
+              :placeholder="placeholderFilter"
               v-model="filterValue"
               @input="onFilterChange"
             />
@@ -77,6 +69,7 @@
           v-for="(option, idx) in availableOptions"
           class="multiselect-panel-item"
           tabindex="0"
+          :aria-label="formatItemAriaLabel(option, optionAriaLabel)"
           :class="option.checked ? 'item-checked' : ''"
           :key="idx"
           @click.stop.prevent="selectOption(option)"
@@ -88,7 +81,9 @@
             :binary="true"
             @click.stop.prevent="selectOption(option)"
           />
-          <span>{{ getOptionLabel(option) }}</span>
+          <span>
+            {{ getOptionLabel(option) }}
+          </span>
         </li>
         <span v-if="emptyMessage" class="empty-message" tabindex="0">
           No results found
@@ -108,7 +103,7 @@ export default {
   props: {
     ariaLabel: {
       type: String,
-      default: 'multiselect'
+      default: 'MultiSelect'
     },
     display: {
       type: String,
@@ -126,6 +121,10 @@ export default {
       type: Array,
       default: new Array()
     },
+    optionAriaLabel: {
+      type: String,
+      default: ''
+    },
     optionLabel: {
       type: String,
       default: ''
@@ -138,6 +137,10 @@ export default {
     placeholder: {
       type: String,
       default: "Select options"
+    },
+    placeholderFilter: {
+      type: String,
+      default: "Search by text"
     }
   },
   data() {
@@ -146,7 +149,7 @@ export default {
       checkedAllOptions: false,
       emptyMessage: false,
       filterValue: '',
-      status: false,
+      statusMultiSelect: false,
       selectedOptions: [],
       showMultiSelectPanel: false
     }
@@ -156,7 +159,7 @@ export default {
   },
   watch: {
     availableOptions: {
-      handler(value) {
+      handler() {
         let count = 0;
         this.availableOptions.forEach(option => {
           option.checked ? count += 1 : this.checkedAllOptions = false;
@@ -183,7 +186,7 @@ export default {
       return this.optionLabel ? ObjectUtils.resolveFieldData(value, this.optionLabel) : value;
     },
     showHideMultiSelectPanel() {
-      this.status = !this.status;
+      this.statusMultiSelect = !this.statusMultiSelect;
       this.showMultiSelectPanel = !this.showMultiSelectPanel;
     },
     closeMultiSelectPanel() {
@@ -272,8 +275,25 @@ export default {
         this.emptyMessage = true;
       }
     },
+    formatMultiSelectStatus() {
+      return this.statusMultiSelect ? ` Open ${this.formatSelectedOptionsStatus()}` : ` Closed ${this.formatSelectedOptionsStatus()}`;
+    },
+    formatSelectedOptionsStatus() {
+      if (this.selectedOptions.length > 0) {
+        return 'Selected options ' + this.getLabelByValue(this.selectedOptions);
+      } else {
+        return ' No option selected';
+      }
+    },
     formatCheckboxStatus() {
       return this.checkedAllOptions ? 'checked' : 'not checked';
+    },
+    formatItemAriaLabel(option, optionType) {
+      if (option.checked) {
+        return `${optionType} option: ${this.getOptionLabel(option)}, selected option, option `
+      } else {
+        return `${optionType} option: ${this.getOptionLabel(option)}, option `
+      }
     }
   }
 };

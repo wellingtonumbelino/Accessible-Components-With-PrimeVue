@@ -68,31 +68,20 @@
       padding: 0.7rem;
       cursor: default;
 
-      .checkbox {
-        .p-checkbox {
-          position: relative;
-          margin-right: auto;
-          z-index: 2;
+      .p-checkbox {
+        position: relative;
+        margin-right: auto;
+        z-index: 2;
 
-          &:not(.p-checkbox-disable) {
-            .p-checkbox-box {
-              &.p-focus {
-                box-shadow: none;
-              }
-
-              &:hover {
-                border-color: #CCCCCC;
-              }
+        &:not(.p-checkbox-disable) {
+          .p-checkbox-box {
+            &.p-focus {
+              box-shadow: none;
+              outline: 2px solid #F2AF00;
             }
-          }
-        }
 
-        &:focus-visible {
-          .p-checkbox {
-            &:not(.p-checkbox-disable) {
-              .p-checkbox-box {
-                outline: 2px solid #F2AF00;
-              }
+            &:hover {
+              border-color: #CCCCCC;
             }
           }
         }
@@ -156,7 +145,6 @@
       overflow-x: hidden;
       width: 100%;
       max-height: 180px;
-      padding: 2px;
       margin-top: 0;
       margin-bottom: 0;
 
@@ -175,7 +163,6 @@
             .p-checkbox-box {
               &.p-focus {
                 box-shadow: none;
-                outline: 2px solid #F2AF00;
               }
             }
           }
@@ -187,7 +174,7 @@
 
         &:focus-visible {
           outline: 2px solid #F2AF00;
-          z-index: 2;
+          outline-offset: -2px;
         }
       }
 
@@ -199,6 +186,7 @@
 
         &:focus-visible {
           outline: 2px solid #F2AF00;
+          outline-offset: -2px;
         }
       }
 

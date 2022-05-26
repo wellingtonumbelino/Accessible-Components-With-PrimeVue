@@ -3,18 +3,19 @@
     <h1>Home</h1>
     <ul>
       <li>
-        <a href="/" @keyup.tab="closeMultiselect">Home</a>
+        <a href="/" @keyup.tab="closeMultiSelect">Home</a>
       </li>
     </ul>
     <MultiSelectAccessible
-      display="chip"
-      ref="multiselectAccessible"
-      v-model="selectedCountries"
       ariaLabel="MultiSelect Accessible"
+      placeholderFilter="Search Option"
+      panelId="accessible"
+      optionAriaLabel="Country"
+      optionLabel="name"
+      ref="multiSelectAccessible"
+      v-model="selectedCountries"
       :filter="true"
       :options="countries"
-      panelId="accessible"
-      optionLabel="name"
     />
     <div class="container">
       {{ selectedCountries }}
@@ -34,8 +35,8 @@ export default {
     };
   },
   methods: {
-    closeMultiselect() {
-      this.$refs.multiselectAccessible.closeMultiSelectPanel();
+    closeMultiSelect() {
+      this.$refs.multiSelectAccessible.closeMultiSelectPanel();
     }
   },
 };
