@@ -1,4 +1,4 @@
-# acessible-components
+# Accessible Components
 
 ## Project setup
 ```
