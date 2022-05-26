@@ -15,7 +15,7 @@
       ref="multiSelectAccessible"
       v-model="selectedCountries"
       :filter="true"
-      :options="countries"
+      :options="teste"
     />
     <div class="container">
       {{ selectedCountries }}
@@ -31,6 +31,7 @@ export default {
   data() {
     return {
       countries: countries,
+      teste: [],
       selectedCountries: []
     };
   },

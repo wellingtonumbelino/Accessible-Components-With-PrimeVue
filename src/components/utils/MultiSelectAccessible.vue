@@ -44,6 +44,7 @@
           v-model="checkedAllOptions"
           :aria-label="`Checkbox. Select All Options ${formatCheckboxStatus()}`"
           :binary="true"
+          :disabled="!availableOptions.length"
           @click.stop.prevent="selectAllOptions"
           @keyup.enter.stop.prevent="selectAllOptions"
         />
@@ -51,6 +52,7 @@
           <span class="p-input-icon-right">
             <InputText
               aria-label="MultiSelect Filter"
+              :disabled="!availableOptions.length"
               :placeholder="placeholderFilter"
               v-model="filterValue"
               @input="onFilterChange"
@@ -87,6 +89,13 @@
         </li>
         <span v-if="emptyMessage" class="empty-message" tabindex="0">
           No results found
+        </span>
+        <span
+          v-if="!availableOptions.length"
+          class="empty-message"
+          tabindex="0"
+        >
+          No available options
         </span>
       </ul>
     </div>
@@ -161,10 +170,12 @@ export default {
     availableOptions: {
       handler() {
         let count = 0;
-        this.availableOptions.forEach(option => {
-          option.checked ? count += 1 : this.checkedAllOptions = false;
-        });
-        this.checkedAllOptions = this.availableOptions.length === count ? true : false;
+        if (this.availableOptions.length > 0) {
+          this.availableOptions.forEach(option => {
+            option.checked ? count += 1 : this.checkedAllOptions = false;
+          });
+          this.checkedAllOptions = this.availableOptions.length === count ? true : false;
+        }
       },
       deep: true
     }
