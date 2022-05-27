@@ -2,8 +2,8 @@
   <div class="multiselect-accessible">
     <button
       class="multiselect-button"
+      ref="multiselectButton"
       :aria-label="ariaLabel + formatMultiSelectStatus()"
-      :id="'multiselect-button' + panelId"
       @click.stop.prevent="showHideMultiSelectPanel"
     >
       <span class="multiselect-label">
@@ -200,8 +200,13 @@ export default {
       this.statusMultiSelect = !this.statusMultiSelect;
       this.showMultiSelectPanel = !this.showMultiSelectPanel;
     },
+    close() {
+      this.clearFilter();
+      this.showMultiSelectPanel = false;
+    },
     closeMultiSelectPanel() {
       this.clearFilter();
+      this.$refs.multiselectButton.focus();
       this.showMultiSelectPanel = false;
     },
     prepareOptions() {

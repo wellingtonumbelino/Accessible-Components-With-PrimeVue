@@ -37,7 +37,7 @@ export default {
   },
   methods: {
     closeMultiSelect() {
-      this.$refs.multiSelectAccessible.closeMultiSelectPanel();
+      this.$refs.multiSelectAccessible.close();
     }
   },
 };
