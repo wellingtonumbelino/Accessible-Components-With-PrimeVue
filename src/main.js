@@ -5,6 +5,7 @@ import MultiSelectAccessible from './components/utils/MultiSelectAccessible';
 import Checkbox from 'primevue/checkbox';
 import InputText from 'primevue/inputtext';
 import Chip from './components/utils/Chip.vue';
+import Tooltip from 'primevue/tooltip';
 
 import "primevue/resources/themes/saga-blue/theme.css";
 import "primevue/resources/primevue.min.css";
@@ -14,6 +15,8 @@ import "./assets/sass/layout.scss";
 const app = createApp(App);
 
 app.use(PrimeVue);
+
+app.directive('tooltip', Tooltip);
 
 app.component('MultiSelectAccessible', MultiSelectAccessible);
 app.component('Checkbox', Checkbox);

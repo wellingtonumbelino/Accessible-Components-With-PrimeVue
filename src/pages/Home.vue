@@ -8,14 +8,14 @@
     </ul>
     <MultiSelectAccessible
       ariaLabel="MultiSelect Accessible"
-      placeholderFilter="Search Option"
       panelId="accessible"
+      placeholderFilter="Search Option"
       optionAriaLabel="Country"
       optionLabel="name"
       ref="multiSelectAccessible"
       v-model="selectedCountries"
       :filter="true"
-      :options="teste"
+      :options="countries"
     />
     <div class="container">
       {{ selectedCountries }}

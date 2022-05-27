@@ -8,14 +8,10 @@
     >
       <span class="multiselect-label">
         <template v-if="display === 'default'">
-          {{
-            selectedOptions.length > 0
-              ? getLabelByValue(selectedOptions)
-              : placeholder
-          }}
+          {{ labelOptions }}
         </template>
         <template v-else-if="display === 'chip'">
-          <template v-if="selectedOptions.length > 0">
+          <template v-if="selectedOptions.length">
             <Chip
               v-for="(option, key) in selectedOptions"
               removable
@@ -29,13 +25,11 @@
           </template>
         </template>
       </span>
-
-      <i v-if="showMultiSelectPanel" class="pi pi-chevron-up" />
-      <i v-else-if="!showMultiSelectPanel" class="pi pi-chevron-down" />
+      <i class="pi pi-chevron-down" />
     </button>
 
     <div
-      v-if="showMultiSelectPanel"
+      v-show="showMultiSelectPanel"
       class="multiselect-panel"
       @keyup.esc="closeMultiSelectPanel"
     >
@@ -48,7 +42,7 @@
           @click.stop.prevent="selectAllOptions"
           @keyup.enter.stop.prevent="selectAllOptions"
         />
-        <div v-show="filter" class="multiselect-panel-filter">
+        <div v-if="filter" class="multiselect-panel-filter">
           <span class="p-input-icon-right">
             <InputText
               aria-label="MultiSelect Filter"
@@ -61,14 +55,15 @@
           </span>
         </div>
         <button
-          aria-label="Close MultiSelect Panel"
+          aria-label="Close multiselect panel and clear filter input."
           class="pi pi-times"
+          v-tooltip.top="'Close multiselect panel and clear filter input.'"
           @click="closeMultiSelectPanel"
         />
       </div>
       <ul class="multiselect-panel-items" :id="'multiselect-panel' + panelId">
         <li
-          v-for="(option, idx) in availableOptions"
+          v-for="(option, idx) in filteredOptions"
           class="multiselect-panel-item"
           tabindex="0"
           :aria-label="formatItemAriaLabel(option, optionAriaLabel)"
@@ -87,7 +82,7 @@
             {{ getOptionLabel(option) }}
           </span>
         </li>
-        <span v-if="emptyMessage" class="empty-message" tabindex="0">
+        <span v-show="emptyMessage" class="empty-message" tabindex="0">
           No results found
         </span>
         <span
@@ -104,6 +99,7 @@
 
 <script>
 import { ObjectUtils } from 'primevue/utils';
+
 export default {
   name: "MultiSelectAccessible",
   emits: [
@@ -140,8 +136,7 @@ export default {
     },
     panelId: {
       type: String,
-      required: true,
-      default: 'default'
+      required: true
     },
     placeholder: {
       type: String,
@@ -157,24 +152,30 @@ export default {
       availableOptions: [],
       checkedAllOptions: false,
       emptyMessage: false,
+      filteredOptions: [],
       filterValue: '',
-      statusMultiSelect: false,
       selectedOptions: [],
-      showMultiSelectPanel: false
+      showMultiSelectPanel: false,
+      statusMultiSelect: false
     }
   },
   created() {
     this.prepareOptions();
   },
+  computed: {
+    labelOptions() {
+      return this.selectedOptions.length ? this.getLabelByValue(this.selectedOptions) : this.placeholder
+    }
+  },
   watch: {
-    availableOptions: {
+    filteredOptions: {
       handler() {
         let count = 0;
-        if (this.availableOptions.length > 0) {
-          this.availableOptions.forEach(option => {
+        if (this.filteredOptions.length) {
+          this.filteredOptions.forEach(option => {
             option.checked ? count += 1 : this.checkedAllOptions = false;
           });
-          this.checkedAllOptions = this.availableOptions.length === count ? true : false;
+          this.checkedAllOptions = this.filteredOptions.length === count ? true : false;
         }
       },
       deep: true
@@ -186,39 +187,37 @@ export default {
     },
     getLabelByValue(value) {
       let options = [];
-      if (value.length > 0) {
+      if (value.length) {
         for (let optionValue of value) {
-          options.push(this.findOptionByValue(optionValue));
+          options.push(this.getOptionLabel(optionValue));
         }
       }
       return options.join(", ");
     },
-    findOptionByValue(value) {
-      return this.optionLabel ? ObjectUtils.resolveFieldData(value, this.optionLabel) : value;
-    },
     showHideMultiSelectPanel() {
+      this.clearFilter();
+      this.filteredOptions = [...this.availableOptions];
       this.statusMultiSelect = !this.statusMultiSelect;
       this.showMultiSelectPanel = !this.showMultiSelectPanel;
     },
     closeMultiSelectPanel() {
+      this.clearFilter();
       this.showMultiSelectPanel = false;
     },
     prepareOptions() {
-      let options = [];
-      this.options.forEach(option => {
-        options.push({
-          id: option.id,
-          name: option.name,
-          checked: false
-        });
+      let options = [...this.options];
+      options.forEach(option => {
+        option.checked = false;
       });
 
       this.availableOptions = [...options];
+      this.filteredOptions = [...options];
     },
     selectOption(option) {
       if (!option.checked) {
         this.availableOptions.forEach(availableOption => {
           if (this.isEquals(availableOption, option)) {
+            availableOption.checked = true;
             option.checked = true;
           }
         });
@@ -233,13 +232,13 @@ export default {
       if (!this.checkedAllOptions) {
         this.selectedOptions = [];
         this.checkedAllOptions = true;
-        this.availableOptions.forEach(option => {
-          this.selectedOptions.push(option);
+        this.filteredOptions.forEach(option => {
           option.checked = true;
+          this.selectedOptions.push(option);
         });
       } else if (this.checkedAllOptions) {
         this.checkedAllOptions = false;
-        this.availableOptions.forEach(option => {
+        this.filteredOptions.forEach(option => {
           option.checked = false;
         });
         this.selectedOptions = [];
@@ -254,9 +253,7 @@ export default {
         }
       });
       let index = this.selectedOptions.findIndex(value => {
-        let a = Object.values(value);
-        let b = Object.values(option)
-        return a[0] === b[0];
+        return this.getOptionLabel(value) === this.getOptionLabel(option);
       });
       this.selectedOptions.splice(index, 1);
       this.$emit('update:modelValue', this.selectedOptions);
@@ -264,36 +261,29 @@ export default {
     isEquals(a, b) {
       return JSON.stringify(a) === JSON.stringify(b);
     },
-    onFilterChange(event) {
+    onFilterChange() {
+      if (!this.filterValue.trim().length) {
+        this.filteredOptions = [...this.availableOptions];
+      } else {
+        this.filteredOptions = this.availableOptions.filter(option => {
+          let value = this.getOptionLabel(option);
+          return value.toLowerCase().includes(this.filterValue.toLowerCase());
+        });
+        this.emptyMessage = !this.filteredOptions.length ? true : false;
+      }
+    },
+    clearFilter() {
+      this.filterValue = '';
       this.emptyMessage = false;
-      let span = null;
-      let textValue = '';
-      let ul = document.getElementById("multiselect-panel" + this.panelId);
-      let li = ul.getElementsByTagName("li");
-      let count = 0;
-
-      for (let i = 0; i < li.length; i++) {
-        span = li[i].getElementsByTagName("span")[1];
-        textValue = span.outerText || span.innerText;
-        if (textValue.toLowerCase().indexOf(event.target.value.toLowerCase()) > -1) {
-          li[i].style.display = "";
-        } else {
-          li[i].style.display = "none";
-          count += 1;
-        }
-      }
-      if (li.length === count) {
-        this.emptyMessage = true;
-      }
     },
     formatMultiSelectStatus() {
-      return this.statusMultiSelect ? ` Open ${this.formatSelectedOptionsStatus()}` : ` Closed ${this.formatSelectedOptionsStatus()}`;
+      return this.statusMultiSelect ? ` open ${this.formatSelectedOptionsStatus()}.` : ` closed ${this.formatSelectedOptionsStatus()}.`;
     },
     formatSelectedOptionsStatus() {
-      if (this.selectedOptions.length > 0) {
-        return 'Selected options ' + this.getLabelByValue(this.selectedOptions);
+      if (this.selectedOptions.length) {
+        return 'Selected options ' + this.getLabelByValue(this.selectedOptions) + '.';
       } else {
-        return ' No option selected';
+        return ' No option selected.';
       }
     },
     formatCheckboxStatus() {
